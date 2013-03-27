@@ -3,9 +3,10 @@ package edu.jhu.thrax.hadoop.features.pivot;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.hadoop.io.DoubleWritable;
-import org.apache.hadoop.io.MapWritable;
+import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.Text;
+
+import edu.jhu.thrax.hadoop.datatypes.FeatureMap;
 
 public class PivotedLexicalSourceGivenTargetFeature extends
 		PivotedNegLogProbFeature {
@@ -27,11 +28,11 @@ public class PivotedLexicalSourceGivenTargetFeature extends
 		return prereqs;
 	}
 
-	public DoubleWritable pivot(MapWritable src, MapWritable tgt) {
-		double egf = ((DoubleWritable) tgt.get(new Text("Lex(e|f)"))).get();
-		double fge = ((DoubleWritable) src.get(new Text("Lex(f|e)"))).get();
+	public FloatWritable pivot(FeatureMap src, FeatureMap tgt) {
+		float egf = ((FloatWritable) tgt.get(new Text("Lex(e|f)"))).get();
+		float fge = ((FloatWritable) src.get(new Text("Lex(f|e)"))).get();
 
-		return new DoubleWritable(egf + fge);
+		return new FloatWritable(egf + fge);
 	}
 
 	@Override

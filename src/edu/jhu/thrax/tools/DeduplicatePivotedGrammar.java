@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import org.apache.hadoop.io.DoubleWritable;
-import org.apache.hadoop.io.MapWritable;
+import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 
+import edu.jhu.thrax.hadoop.datatypes.FeatureMap;
 import edu.jhu.thrax.hadoop.datatypes.RuleWritable;
 import edu.jhu.thrax.hadoop.features.SimpleFeature;
 import edu.jhu.thrax.hadoop.features.SimpleFeatureFactory;
@@ -105,7 +105,7 @@ public class DeduplicatePivotedGrammar {
     pivoted = PivotedFeatureFactory.getAll(feature_string);
 
     try {
-      MapWritable features = new MapWritable();
+      FeatureMap features = new FeatureMap();
       LineReader reader = new LineReader(grammar_file);
 
       RuleWritable rule = null;
@@ -129,7 +129,7 @@ public class DeduplicatePivotedGrammar {
           for (i = 0; i < feature_entries.length; i++) {
             String[] parts = feature_entries[i].split("=");
             Text label = new Text(parts[0]);
-            DoubleWritable value = new DoubleWritable(Double.parseDouble(parts[1]));
+            FloatWritable value = new FloatWritable(Float.parseFloat(parts[1]));
             features.put(label, value);
           }
         }

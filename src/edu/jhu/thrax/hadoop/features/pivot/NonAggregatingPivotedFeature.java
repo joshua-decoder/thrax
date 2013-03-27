@@ -2,24 +2,25 @@ package edu.jhu.thrax.hadoop.features.pivot;
 
 import java.util.Map;
 
-import org.apache.hadoop.io.DoubleWritable;
-import org.apache.hadoop.io.MapWritable;
+import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 
+import edu.jhu.thrax.hadoop.datatypes.FeatureMap;
+
 public abstract class NonAggregatingPivotedFeature implements PivotedFeature {
 
-  private static final DoubleWritable ZERO = new DoubleWritable(0.0);
+  private static final FloatWritable ZERO = new FloatWritable(0.0f);
 
-  private double value;
+  private float value;
 
   public void initializeAggregation() {
-    value = Double.MAX_VALUE;
+    value = Float.MAX_VALUE;
   }
 
-  public void aggregate(MapWritable features) {
-    DoubleWritable val = (DoubleWritable) features.get(getFeatureLabel());
-    if (value == Double.MAX_VALUE) {
+  public void aggregate(FeatureMap features) {
+    FloatWritable val = (FloatWritable) features.get(getFeatureLabel());
+    if (value == Float.MAX_VALUE) {
       value = val.get();
     } else {
       if (value != val.get()) {
@@ -29,8 +30,8 @@ public abstract class NonAggregatingPivotedFeature implements PivotedFeature {
     }
   }
 
-  public DoubleWritable finalizeAggregation() {
-    return new DoubleWritable(value);
+  public FloatWritable finalizeAggregation() {
+    return new FloatWritable(value);
   }
 
   public void unaryGlueRuleScore(Text nt, Map<Text, Writable> map) {

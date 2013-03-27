@@ -4,20 +4,21 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.hadoop.io.DoubleWritable;
-import org.apache.hadoop.io.MapWritable;
+import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
+
+import edu.jhu.thrax.hadoop.datatypes.FeatureMap;
 
 public class PivotedRarityPenaltyFeature implements PivotedFeature {
 
   private static final Text LABEL = new Text("RarityPenalty");
 
-  private static final DoubleWritable ZERO = new DoubleWritable(0.0);
+  private static final FloatWritable ZERO = new FloatWritable(0.0f);
   
-  private static final double RENORMALIZE = Math.exp(-1);
+  private static final float RENORMALIZE = (float) Math.exp(-1);
 
-  private double aggregated_rp;
+  private float aggregated_rp;
 
   public String getName() {
     return "rarity";
@@ -33,10 +34,10 @@ public class PivotedRarityPenaltyFeature implements PivotedFeature {
     return prereqs;
   }
 
-  public DoubleWritable pivot(MapWritable a, MapWritable b) {
-    double a_rp = ((DoubleWritable) a.get(new Text("RarityPenalty"))).get();
-    double b_rp = ((DoubleWritable) b.get(new Text("RarityPenalty"))).get();
-    return new DoubleWritable(Math.max(a_rp, b_rp));
+  public FloatWritable pivot(FeatureMap a, FeatureMap b) {
+    float a_rp = ((FloatWritable) a.get(new Text("RarityPenalty"))).get();
+    float b_rp = ((FloatWritable) b.get(new Text("RarityPenalty"))).get();
+    return new FloatWritable(Math.max(a_rp, b_rp));
   }
 
   public void unaryGlueRuleScore(Text nt, Map<Text, Writable> map) {
@@ -51,8 +52,8 @@ public class PivotedRarityPenaltyFeature implements PivotedFeature {
     aggregated_rp = -1;
   }
 
-  public void aggregate(MapWritable a) {
-    double rp = ((DoubleWritable) a.get(LABEL)).get();
+  public void aggregate(FeatureMap a) {
+    float rp = ((FloatWritable) a.get(LABEL)).get();
     if (aggregated_rp == -1) {
       aggregated_rp = rp;
     } else {
@@ -63,8 +64,8 @@ public class PivotedRarityPenaltyFeature implements PivotedFeature {
     }
   }
 
-  public DoubleWritable finalizeAggregation() {
-    return new DoubleWritable(aggregated_rp);
+  public FloatWritable finalizeAggregation() {
+    return new FloatWritable(aggregated_rp);
   }
 
   @Override

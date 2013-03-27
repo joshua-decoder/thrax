@@ -12,10 +12,10 @@ import edu.jhu.thrax.hadoop.datatypes.RuleWritable;
 import edu.jhu.thrax.hadoop.jobs.ThraxJob;
 
 @SuppressWarnings("rawtypes")
-public class RarityPenaltyFeature implements AnnotationFeature {
+public class LogCountFeature implements AnnotationFeature {
 
-  private static final Text LABEL = new Text("RarityPenalty");
-  private static final FloatWritable ZERO = new FloatWritable(0.0f);
+  private static final Text LABEL = new Text("LogCount");
+  private static final FloatWritable ZERO = new FloatWritable(0);
 
   public Text getName() {
     return LABEL;
@@ -31,7 +31,7 @@ public class RarityPenaltyFeature implements AnnotationFeature {
 
   @Override
   public Writable score(RuleWritable r, Annotation annotation) {
-    return new FloatWritable((float) Math.exp(1 - annotation.count()));
+    return new FloatWritable((float) Math.log(annotation.count()));
   }
 
   @Override
