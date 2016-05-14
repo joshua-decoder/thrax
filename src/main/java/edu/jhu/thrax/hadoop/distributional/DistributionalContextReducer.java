@@ -33,7 +33,7 @@ public class DistributionalContextReducer
       Signature reduced_signature = new Signature();
       // TODO: double-check need for deep copy?
       reduced_signature.sums = reduced.sums;
-      slsh.buildSignature(reduced_signature, false);
+      slsh.buildSignature(reduced_signature.toString(), false);
       context.write(new SignatureWritable(key, reduced_signature, reduced.strength.get()),
           NullWritable.get());
     }

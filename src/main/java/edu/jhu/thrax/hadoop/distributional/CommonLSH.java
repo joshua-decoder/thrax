@@ -9,9 +9,9 @@ public class CommonLSH {
   public static SLSH getSLSH(Configuration conf) {
     SLSH slsh = null;
     try {
-      slsh = new SLSH();
-      slsh.initialize(conf.getInt("thrax.lsh-num-bits", 256),
-          conf.getInt("thrax.lsh-pool-size", 100000), conf.getInt("thrax.lsh-random-seed", 42));
+      slsh = new SLSH(true);
+      //slsh.initialize(conf.getInt("thrax.lsh-num-bits", 256),
+      //    conf.getInt("thrax.lsh-pool-size", 100000), conf.getInt("thrax.lsh-random-seed", 42));
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(1);
