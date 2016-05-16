@@ -45,7 +45,7 @@ public class OutputTool extends Configured implements Tool
             workDir += Path.SEPARATOR;
             conf.set("thrax.work-dir", workDir);
         }
-        Job job = new Job(conf, "thrax-collect");
+        Job job = Job.getInstance(conf, "thrax-collect");
         job.setJarByClass(OutputReducer.class);
 
         job.setMapperClass(Mapper.class);

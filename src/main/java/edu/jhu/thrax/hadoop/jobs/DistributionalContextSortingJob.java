@@ -24,7 +24,7 @@ public class DistributionalContextSortingJob implements ThraxJob {
       new HashSet<Class<? extends ThraxJob>>();
 
   public Job getJob(Configuration conf) throws IOException {
-    Job job = new Job(conf, "sorting");
+    Job job = Job.getInstance(conf, "sorting");
 
     job.setJarByClass(DistributionalContextMapper.class);
 

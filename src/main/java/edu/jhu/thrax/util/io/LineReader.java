@@ -90,7 +90,6 @@ public class LineReader implements Reader<String> {
    *             <code>InputStream</code>. This method is considered a hack which should be removed
    *             once a better solution presents itself.
    */
-  @SuppressWarnings("resource")
   @Deprecated
   public static final InputStream getInputStream(String filename) throws IOException {
     FileInputStream fis = new FileInputStream(filename);

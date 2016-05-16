@@ -28,7 +28,7 @@ public class VocabularyJob implements ThraxJob {
   public VocabularyJob() {}
 
   public Job getJob(Configuration conf) throws IOException {
-    Job job = new Job(conf, "vocabulary");
+    Job job = Job.getInstance(conf, "vocabulary");
     job.setJarByClass(VocabularyJob.class);
 
     job.setMapperClass(VocabularyJob.Map.class);

@@ -4,10 +4,10 @@ import java.io.BufferedWriter;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.SequenceFile.Reader.Option;
 
 import edu.jhu.jerboa.util.FileManager;
 
@@ -51,7 +51,8 @@ public class SequenceToGrammar {
     Text rule_string = new Text();
     Configuration config = new Configuration();
     Path path = new Path(input_file);
-    SequenceFile.Reader reader = new SequenceFile.Reader(FileSystem.getLocal(config), path, config);
+    Option fFile = SequenceFile.Reader.file(path);
+    SequenceFile.Reader reader = new SequenceFile.Reader(config, fFile);
 
     BufferedWriter grammar_writer = FileManager.getWriter(output_file);
     long rule_count = 0;

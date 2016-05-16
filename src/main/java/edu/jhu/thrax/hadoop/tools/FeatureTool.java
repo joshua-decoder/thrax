@@ -48,7 +48,7 @@ public class FeatureTool extends Configured implements Tool
             workDir += Path.SEPARATOR;
             conf.set("thrax.work-dir", workDir);
         }
-        Job job = new Job(conf, String.format("thrax-%s", featureName));
+        Job job = Job.getInstance(conf, String.format("thrax-%s", featureName));
 
         job.setJarByClass(f.getClass());
         job.setMapperClass(f.mapperClass());

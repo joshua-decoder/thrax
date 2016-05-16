@@ -22,6 +22,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.SequenceFile;
+import org.apache.hadoop.io.SequenceFile.Reader.Option;
 import org.apache.hadoop.io.Text;
 
 import edu.jhu.thrax.hadoop.features.SimpleFeature;
@@ -165,7 +166,8 @@ public class Vocabulary {
       initialize(conf);
 
       for (FileStatus file : files) {
-        SequenceFile.Reader reader = new SequenceFile.Reader(file_system, file.getPath(), conf);
+        Option fileOption = SequenceFile.Reader.file(file.getPath());
+        SequenceFile.Reader reader = new SequenceFile.Reader(conf, fileOption);
         Text h_token = new Text();
         IntWritable h_id = new IntWritable();
         while (reader.next(h_id, h_token)) {

@@ -88,7 +88,7 @@ public class ContextWritable implements Writable {
     // TODO: probably needs deep copy.
     this_signature.sums = sums;
     that_signature.sums = sums;
-    slsh.updateSignature(this_signature, that_signature);
+    slsh.update(this_signature.toString(), that_signature);
   }
 
   public void compact(SLSH slsh) {

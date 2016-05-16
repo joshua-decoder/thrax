@@ -60,6 +60,7 @@ public class TestSetFilter {
 
   private void getTestSentences(String filename) {
     try {
+      @SuppressWarnings("resource")
       Scanner scanner = new Scanner(new File(filename), "UTF-8");
       while (scanner.hasNextLine()) {
         String line = scanner.nextLine();
@@ -114,6 +115,7 @@ public class TestSetFilter {
     setSentence(sentence);
 
     try {
+      @SuppressWarnings("resource")
       Scanner scanner =
           new Scanner(new GZIPInputStream(new FileInputStream(fullGrammarFile)), "UTF-8");
       int rulesIn = 0;
@@ -336,6 +338,7 @@ public class TestSetFilter {
       filter.getTestSentences(argv[i]);
     }
 
+    @SuppressWarnings("resource")
     Scanner scanner = new Scanner(System.in, "UTF-8");
     int rulesIn = 0;
     int rulesOut = 0;

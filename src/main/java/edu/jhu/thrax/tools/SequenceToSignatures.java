@@ -4,13 +4,12 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.URI;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.SequenceFile;
+import org.apache.hadoop.io.SequenceFile.Reader.Option;
 
 import edu.jhu.jerboa.util.FileManager;
 import edu.jhu.thrax.hadoop.distributional.SignatureWritable;
@@ -75,13 +74,14 @@ public class SequenceToSignatures {
     SequenceFile.Reader reader;
     if (local) {
       Path path = new Path(input_file);
-      reader = new SequenceFile.Reader(FileSystem.getLocal(config), path, config);
+      Option fFile = SequenceFile.Reader.file(path);
+      reader = new SequenceFile.Reader(config, fFile);
     } else {
       // TODO: Only works for completely specified URLs (i.e. hdfs://name-node/...), currently
       // disabled until I figure out how to get simple paths to work in HDFS.
-      FileSystem file_system = FileSystem.get(URI.create(input_file), config);
       Path path = new Path(input_file);
-      reader = new SequenceFile.Reader(file_system, path, config);
+      Option fFile = SequenceFile.Reader.file(path);
+      reader = new SequenceFile.Reader(config, fFile);
     }
 
     int chunk_id = 0;

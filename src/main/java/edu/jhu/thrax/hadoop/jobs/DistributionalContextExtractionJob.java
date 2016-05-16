@@ -22,7 +22,7 @@ import edu.jhu.thrax.hadoop.distributional.SignatureWritable;
 public class DistributionalContextExtractionJob implements ThraxJob {
 
   public Job getJob(Configuration conf) throws IOException {
-    Job job = new Job(conf, "distributional");
+    Job job = Job.getInstance(conf, "distributional");
 
     job.setJarByClass(DistributionalContextMapper.class);
 

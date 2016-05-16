@@ -27,7 +27,7 @@ public class ExtractionJob implements ThraxJob {
   }
 
   public Job getJob(Configuration conf) throws IOException {
-    Job job = new Job(conf, "extraction");
+    Job job = Job.getInstance(conf, "extraction");
     job.setJarByClass(ExtractionMapper.class);
 
     job.setMapperClass(ExtractionMapper.class);

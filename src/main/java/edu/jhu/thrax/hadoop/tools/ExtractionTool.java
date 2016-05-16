@@ -44,7 +44,7 @@ public class ExtractionTool extends Configured implements Tool
             return 1;
         }
 
-        Job job = new Job(conf, "thrax");
+        Job job = Job.getInstance(conf, "thrax");
         job.setJarByClass(ExtractionMapper.class);
         job.setMapperClass(ExtractionMapper.class);
         job.setCombinerClass(IntSumReducer.class);

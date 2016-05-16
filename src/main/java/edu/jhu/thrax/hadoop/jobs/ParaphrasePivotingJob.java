@@ -32,7 +32,7 @@ public class ParaphrasePivotingJob implements ThraxJob {
   }
 
   public Job getJob(Configuration conf) throws IOException {
-    Job job = new Job(conf, "pivoting");
+    Job job = Job.getInstance(conf, "pivoting");
 
     job.setJarByClass(PivotingReducer.class);
 

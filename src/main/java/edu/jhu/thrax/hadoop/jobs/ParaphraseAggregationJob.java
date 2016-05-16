@@ -26,7 +26,7 @@ public class ParaphraseAggregationJob implements ThraxJob {
       new HashSet<Class<? extends ThraxJob>>();
 
   public Job getJob(Configuration conf) throws IOException {
-    Job job = new Job(conf, "aggregate");
+    Job job = Job.getInstance(conf, "aggregate");
 
     job.setJarByClass(AggregationReducer.class);
 

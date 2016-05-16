@@ -42,7 +42,7 @@ public class FeatureCollectionJob implements ThraxJob {
   }
 
   public Job getJob(Configuration conf) throws IOException {
-    Job job = new Job(conf, "collect");
+    Job job = Job.getInstance(conf, "collect");
 
     String workDir = conf.get("thrax.work-dir");
 

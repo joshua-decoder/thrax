@@ -49,7 +49,7 @@ public class TargetWordGivenSourceWordProbabilityTool extends Configured impleme
             conf.set("thrax.work-dir", workDir);
         }
 		conf.setBoolean(WordLexprobJob.SOURCE_GIVEN_TARGET, false);
-        Job job = new Job(conf, "thrax-tgs-word-lexprob");
+        Job job = Job.getInstance(conf, "thrax-tgs-word-lexprob");
 
         job.setJarByClass(WordLexicalProbabilityCalculator.class);
         job.setMapperClass(WordLexicalProbabilityCalculator.Map.class);

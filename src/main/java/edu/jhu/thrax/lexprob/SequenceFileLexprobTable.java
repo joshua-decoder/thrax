@@ -11,6 +11,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.SequenceFile;
+import org.apache.hadoop.io.SequenceFile.Reader.Option;
 
 /**
  * A base class for lexical probability tables that will be read from a Hadoop sequence file that is
@@ -52,8 +53,6 @@ public abstract class SequenceFileLexprobTable {
     final FloatWritable d = new FloatWritable(0.0f);
     final FileStatus[] theFiles = files;
     final Configuration theConf = conf;
-    final FileSystem fs = theFS;
-
     final Iterator<TableEntry> iterator = new Iterator<TableEntry>() {
       int fileIndex = 0;
       TableEntry lookahead = null;
@@ -66,7 +65,8 @@ public abstract class SequenceFileLexprobTable {
           if (lookahead != null) return true;
           // if the reader is null, we haven't looked at a single
           // file yet, so set the reader to read the first file
-          if (reader == null) reader = new SequenceFile.Reader(fs, theFiles[0].getPath(), theConf);
+          Option fFile = SequenceFile.Reader.file(theFiles[0].getPath());
+          if (reader == null) reader = new SequenceFile.Reader(theConf, fFile);
           // reader is not null here, so try to read an entry
           boolean gotNew = reader.next(pair, d);
           if (gotNew) {
@@ -79,7 +79,8 @@ public abstract class SequenceFileLexprobTable {
           // but if there are no more, return false
           if (fileIndex >= theFiles.length) return false;
           reader.close();
-          reader = new SequenceFile.Reader(fs, theFiles[fileIndex].getPath(), theConf);
+          Option file = SequenceFile.Reader.file(theFiles[fileIndex].getPath());
+          reader = new SequenceFile.Reader(theConf, file);
           // new file, so try again
           gotNew = reader.next(pair, d);
           if (gotNew) {

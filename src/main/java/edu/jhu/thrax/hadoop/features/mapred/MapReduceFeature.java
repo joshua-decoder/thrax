@@ -48,7 +48,7 @@ public abstract class MapReduceFeature implements Feature, ThraxJob {
 
   public Job getJob(Configuration conf) throws IOException {
     String name = getName();
-    Job job = new Job(conf, name);
+    Job job = Job.getInstance(conf, name);
     job.setJarByClass(this.getClass());
 
     job.setMapperClass(this.mapperClass());
