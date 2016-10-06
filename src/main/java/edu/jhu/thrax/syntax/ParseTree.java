@@ -7,8 +7,12 @@ import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.Stack;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.thrax.util.Vocabulary;
 
@@ -17,6 +21,7 @@ public class ParseTree {
   private final int[] numChildren;
   private final int[] start;
   private final int[] end;
+  private static final Logger LOG = LoggerFactory.getLogger(ParseTree.class);
 
   private ParseTree(int[] ls, int[] cs, int[] ss, int[] es) {
     labels = ls;
@@ -199,7 +204,7 @@ public class ParseTree {
 
     public String toString() {
       if (isLeaf()) return Vocabulary.word(label());
-      String result = String.format("(%s", label());
+      String result = String.format(Locale.ROOT, "(%s", label());
       Iterator<Node> children = children();
       while (children.hasNext())
         result += " " + children.next().toString();
@@ -250,10 +255,10 @@ public class ParseTree {
   }
 
   public static void main(String[] argv) throws IOException {
-    Scanner scanner = new Scanner(System.in);
+    Scanner scanner = new Scanner(System.in, "UTF_8");
     while (scanner.hasNextLine()) {
       ParseTree tree = ParseTree.fromPennFormat(scanner.nextLine());
-      System.out.printf("%s\t%d\n", tree, tree.hashCode());
+      LOG.info("{}\t{}\n", tree, tree.hashCode());
     }
     scanner.close();
   }

@@ -1,5 +1,7 @@
 package edu.jhu.thrax.lexprob;
 
+import java.util.Locale;
+
 import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
 
@@ -19,7 +21,7 @@ public class TableEntry {
   }
 
   public String toString() {
-    return String.format("(%s,%s):%.4f", car, cdr, probability);
+    return String.format(Locale.ROOT, "(%s,%s):%.4f", car, cdr, probability);
   }
 
   public boolean equals(Object o) {

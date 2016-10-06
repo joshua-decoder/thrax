@@ -2,15 +2,18 @@ package edu.jhu.thrax.tools;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Scanner;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.jerboa.util.FileManager;
 import edu.jhu.thrax.util.io.LineReader;
 
 public class JudgeParaphrases {
-
-  private static final Logger logger = Logger.getLogger(JudgeParaphrases.class.getName());
+  
+  private static final Logger LOG = LoggerFactory.getLogger(JudgeParaphrases.class);
 
   public static void main(String[] args) {
 
@@ -26,11 +29,11 @@ public class JudgeParaphrases {
     }
 
     if (input == null) {
-      logger.severe("No input file specified.");
+      LOG.error("No input file specified.");
       return;
     }
     if (output == null) {
-      logger.severe("No output file specified.");
+      LOG.error("No output file specified.");
       return;
     }
 
@@ -40,19 +43,19 @@ public class JudgeParaphrases {
     try {
       reader = new LineReader(input);
       writer = FileManager.getWriter(output);
-      user = new Scanner(System.in);
+      user = new Scanner(System.in, "UTF-8");
       while (reader.hasNext()) {
         String pp = reader.next().trim();
-        System.out.print(pp + "\t");
+        LOG.info("{}\t", pp);
         String score = user.next().trim();
-        if (score.toLowerCase().equals("quit") || score.toLowerCase().equals("exit"))
+        if (score.toLowerCase(Locale.ROOT).equals("quit") || score.toLowerCase(Locale.ROOT).equals("exit"))
           break;
         writer.write(score + "\t" + pp + "\n");
       }
       reader.close();
       writer.close();
     } catch (IOException e) {
-      logger.severe(e.getMessage());
+      LOG.error(e.getMessage());
     }
   }
 

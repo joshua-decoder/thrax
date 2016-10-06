@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.jerboa.util.FileManager;
 import edu.jhu.thrax.util.FormatUtils;
@@ -16,8 +18,7 @@ import edu.jhu.thrax.util.io.LineReader;
 
 public class ParaphraseIntersect {
 
-  private static final Logger logger = Logger.getLogger(ParaphraseIntersect.class.getName());
-
+  private static final Logger LOG = LoggerFactory.getLogger(ParaphraseIntersect.class);
   private static final Pattern P_SPACE = Pattern.compile("\\s+");
   private static final Pattern P_EQUAL = Pattern.compile("=");
 
@@ -49,19 +50,19 @@ public class ParaphraseIntersect {
     }
 
     if (grammar_file == null) {
-      logger.severe("No grammar specified.");
+      LOG.error("No grammar specified.");
       return;
     }
     if (reference_file == null) {
-      logger.severe("No reference file specified.");
+      LOG.error("No reference file specified.");
       return;
     }
     if (weight_file == null) {
-      logger.severe("No weight file specified.");
+      LOG.error("No weight file specified.");
       return;
     }
     if (output_file == null) {
-      logger.severe("No output file specified.");
+      LOG.error("No output file specified.");
       return;
     }
 
@@ -89,7 +90,7 @@ public class ParaphraseIntersect {
       // TODO: fix sorting to comply with UNIX sort. Likely: LC_COLLATE=C and String.compareTo()
       Collator comp = Collator.getInstance(Locale.US);
 
-      System.err.print("[");
+      LOG.error("[");
       int num_references = 0;
       while (gread.hasNext()) {
         String rule_line = gread.next().trim();
@@ -109,8 +110,6 @@ public class ParaphraseIntersect {
           }
         }
 
-//        System.err.println("Checking: " + rule);
-        
         while (rread.hasNext() && (rline == null || comp.compare(rule, rline) > 0)) {
           String line = rread.next().trim();
           String[] rfs = FormatUtils.P_DELIM.split(line);
@@ -118,21 +117,18 @@ public class ParaphraseIntersect {
           int count = (int) Math.round(1 - Math.log(rarity));
           if (count >= threshold && !line.contains("[X") && (identity || !rfs[1].equals(rfs[2]))) {
             rline = rfs[0] + " ||| " + rfs[1] + " ||| " + rfs[2];
-//            System.err.println("Test: " + rline);
             num_references++;
           }
         }
-//        System.err.println("Order broken.");
         
         if (comp.compare(rule, rline) == 0) {
-//          System.err.println("MATCH: " + rline);
           found.add(score);
         } else {
           missed.add(score);
         }
       }
       gread.close();
-      System.err.println("]");
+      LOG.error("]");
 
       while (rread.hasNext()) {
         rread.next();
@@ -155,10 +151,10 @@ public class ParaphraseIntersect {
       int num_correct = matched.length;
       int num_paraphrases = matched.length + unmatched.length;
 
-      System.err.println("References:  " + num_references);
-      System.err.println("Matched:     " + num_correct);
-      System.err.println("Unmatched:   " + (num_references - num_correct));
-      System.err.println("Nonmatching: " + unmatched.length);
+      LOG.info("References:  {}", num_references);
+      LOG.info("Matched:     {}", num_correct);
+      LOG.info("Unmatched:   {}", (num_references - num_correct));
+      LOG.info("Nonmatching: {}", unmatched.length);
 
       Arrays.sort(matched);
       Arrays.sort(unmatched);
@@ -180,7 +176,7 @@ public class ParaphraseIntersect {
       }
       score_writer.close();
     } catch (IOException e) {
-      logger.severe(e.getMessage());
+      LOG.error(e.getMessage());
     }
   }
 }

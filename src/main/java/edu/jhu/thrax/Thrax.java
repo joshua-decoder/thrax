@@ -12,6 +12,8 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.thrax.hadoop.features.annotation.AnnotationFeature;
 import edu.jhu.thrax.hadoop.features.annotation.AnnotationFeatureFactory;
@@ -36,6 +38,7 @@ import edu.jhu.thrax.util.BackwardsCompatibility;
 import edu.jhu.thrax.util.ConfFileParser;
 
 public class Thrax extends Configured implements Tool {
+  private static final Logger LOG = LoggerFactory.getLogger(Thrax.class);
   private Scheduler scheduler;
   private Configuration conf;
   
@@ -44,7 +47,7 @@ public class Thrax extends Configured implements Tool {
 
   public synchronized int run(String[] argv) throws Exception {
     if (argv.length < 1) {
-      System.err.println("usage: Thrax <conf file> [output path]");
+      LOG.error("usage: Thrax <conf file> [output path]");
       return RETURN_CODE_FAILED;
     }
     // do some setup of configuration
@@ -78,12 +81,10 @@ public class Thrax extends Configured implements Tool {
       }
       wait();
     } while (scheduler.notFinished());
-    System.err.print(scheduler);
+    LOG.info(scheduler.toString());
     if (scheduler.getClassesByState(JobState.SUCCESS).size() == scheduler.numJobs()) {
-      System.err.println("Work directory was " + workDir);
-      System.err.println("To retrieve grammar:");
-      System.err.println("hadoop fs -getmerge " + conf.get("thrax.outputPath", "")
-          + " <destination>");
+      LOG.info("Work directory was {}", workDir);
+      LOG.info("To retrieve grammar: hadoop fs -getmerge {} <destination>", conf.get("thrax.outputPath", ""));
       return RETURN_CODE_SUCCESS;
     } else {
       return RETURN_CODE_FAILED;
@@ -99,7 +100,7 @@ public class Thrax extends Configured implements Tool {
     String type = conf.get("thrax.type", "translation");
     String features = BackwardsCompatibility.equivalent(conf.get("thrax.features", ""));
 
-    System.err.println("Running in mode: " + type);
+    LOG.info("Running in mode: {}", type);
 
     scheduler.schedule(VocabularyJob.class);
 
@@ -166,7 +167,7 @@ public class Thrax extends Configured implements Tool {
       scheduler.schedule(DistributionalContextSortingJob.class);
       scheduler.percolate(DistributionalContextSortingJob.class);
     } else {
-      System.err.println("Unknown grammar type. No jobs scheduled.");
+      LOG.error("Unknown grammar type. No jobs scheduled.");
     }
   }
 
@@ -179,7 +180,7 @@ public class Thrax extends Configured implements Tool {
     try {
       scheduler.setState(theClass, success ? JobState.SUCCESS : JobState.FAILED);
     } catch (SchedulerException e) {
-      System.err.println(e.getMessage());
+      LOG.error(e.getMessage());
     }
     notify();
     return;
@@ -201,7 +202,7 @@ public class Thrax extends Configured implements Tool {
         job.waitForCompletion(false);
         thrax.workerDone(theClass, job.isSuccessful());
       } catch (Exception e) {
-        e.printStackTrace();
+        LOG.error(e.getMessage());
         thrax.workerDone(theClass, false);
       }
       return;

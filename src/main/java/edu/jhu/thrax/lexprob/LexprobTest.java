@@ -4,19 +4,24 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LexprobTest extends Configured implements Tool {
+
+  private static final Logger LOG = LoggerFactory.getLogger(LexprobTest.class);
+
   public int run(String[] argv) throws Exception {
     if (argv.length < 1) {
-      System.err.println("usage: LexprobTest <file>");
+      LOG.error("usage: LexprobTest <file>");
       return 1;
     }
 
     Configuration conf = getConf();
     HashMapLexprobTable t = new HashMapLexprobTable(conf, argv[0]);
-    System.err.println("HashMap populated: " + t.toString());
+    LOG.info("HashMap populated: {}", t.toString());
     TrieLexprobTable trie = new TrieLexprobTable(conf, argv[0]);
-    System.err.println("Trie populated: " + trie.toString());
+    LOG.info("Trie populated: {}", trie.toString());
     return 0;
   }
 

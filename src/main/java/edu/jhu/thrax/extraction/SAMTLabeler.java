@@ -2,6 +2,9 @@ package edu.jhu.thrax.extraction;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.jhu.thrax.syntax.ParseTree;
 import edu.jhu.thrax.util.Vocabulary;
 
@@ -12,6 +15,7 @@ public class SAMTLabeler implements SpanLabeler {
   private boolean allowConcat = true;
   private boolean allowDoubleConcat = true;
   private UnaryCategoryHandler unaryCategoryHandler;
+  private static final Logger LOG = LoggerFactory.getLogger(SAMTLabeler.class);
 
   private ParseTree tree;
   private int defaultLabel;
@@ -25,7 +29,7 @@ public class SAMTLabeler implements SpanLabeler {
     defaultLabel = def;
     unaryCategoryHandler = UnaryCategoryHandler.fromString(unary);
     tree = ParseTree.fromPennFormat(parse);
-    if (tree == null) System.err.printf("WARNING: SAMT labeler: %s is not a parse tree\n", parse);
+    if (tree == null) LOG.error("WARNING: SAMT labeler: {} is not a parse tree\n", parse);
   }
 
   public int getLabel(int from, int to) {

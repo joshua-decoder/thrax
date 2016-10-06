@@ -9,6 +9,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Reducer.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.thrax.hadoop.datatypes.AlignmentWritable;
 import edu.jhu.thrax.hadoop.datatypes.Annotation;
@@ -20,6 +22,8 @@ import edu.jhu.thrax.util.Vocabulary;
 
 @SuppressWarnings("rawtypes")
 public class SourceGivenTargetLexicalProbabilityFeature implements AnnotationFeature {
+  
+  private static final Logger LOG = LoggerFactory.getLogger(SourceGivenTargetLexicalProbabilityFeature.class);
 
   public static final String NAME = "f_given_e_lex";
   public static final String LABEL = "Lex(f|e)";
@@ -82,7 +86,7 @@ public class SourceGivenTargetLexicalProbabilityFeature implements AnnotationFea
       float p = table.get(target[e], source[f]);
       prob += (p < 0 ? DEFAULT_PROB : p);
       if (p < 0)
-        System.err.printf("WARNING: could not read lexprob p(%s|%s)\n", Vocabulary.word(source[f]),
+        LOG.warn("WARNING: could not read lexprob p({}|{})\n", Vocabulary.word(source[f]),
             Vocabulary.word(target[e]));
     }
     if (m != 0)

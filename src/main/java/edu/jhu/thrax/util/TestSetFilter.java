@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,10 +20,14 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class TestSetFilter {
   private List<String> testSentences;
   private Map<String, Set<Integer>> sentencesByWord;
   private Set<String> ngrams;
+  private static final Logger LOG = LoggerFactory.getLogger(TestSetFilter.class);
 
   // for caching of accepted rules
   private String lastSourceSide;
@@ -68,10 +74,10 @@ public class TestSetFilter {
         testSentences.add(line);
       }
     } catch (FileNotFoundException e) {
-      System.err.printf("Could not open %s\n", e.getMessage());
+      LOG.error("Could not open {}\n", e.getMessage());
     }
 
-    if (verbose) System.err.println("Added " + testSentences.size() + " sentences.\n");
+    if (verbose) LOG.info("Added {} sentences.\n", testSentences.size());
 
     ngrams = getTestNGrams(testSentences);
   }
@@ -108,8 +114,8 @@ public class TestSetFilter {
   public void filterGrammarToFile(String fullGrammarFile, String sentence,
       String filteredGrammarFile, boolean fast) {
 
-    System.err.println(String.format("filterGrammarToFile(%s,%s,%s,%s)\n", fullGrammarFile,
-        sentence, filteredGrammarFile, (fast ? "fast" : "exact")));
+    LOG.error("filterGrammarToFile({},{},{},{})\n", fullGrammarFile,
+        sentence, filteredGrammarFile, (fast ? "fast" : "exact"));
 
     this.fast = fast;
     setSentence(sentence);
@@ -121,21 +127,22 @@ public class TestSetFilter {
       int rulesIn = 0;
       int rulesOut = 0;
       boolean verbose = false;
-      if (verbose) System.err.println("Processing rules...");
+      if (verbose) LOG.info("Processing rules...");
 
       PrintWriter out =
-          new PrintWriter(new GZIPOutputStream(new FileOutputStream(filteredGrammarFile)));
+          new PrintWriter(
+              new OutputStreamWriter(
+                  new GZIPOutputStream(
+                      new FileOutputStream(filteredGrammarFile)), StandardCharsets.UTF_8));
 
       // iterate over all lines in the grammar
       while (scanner.hasNextLine()) {
         if (verbose) {
           if ((rulesIn + 1) % 2000 == 0) {
-            System.err.print(".");
-            System.err.flush();
+            LOG.info(".");
           }
           if ((rulesIn + 1) % 100000 == 0) {
-            System.err.println(" [" + (rulesIn + 1) + "]");
-            System.err.flush();
+            LOG.info(" [{}] ", (rulesIn + 1) );
           }
         }
         rulesIn++;
@@ -149,14 +156,14 @@ public class TestSetFilter {
       out.close();
 
       if (verbose) {
-        System.err.println("[INFO] Total rules read: " + rulesIn);
-        System.err.println("[INFO] Rules kept: " + rulesOut);
-        System.err.println("[INFO] Rules dropped: " + (rulesIn - rulesOut));
+        LOG.info("[INFO] Total rules read: {}", rulesIn);
+        LOG.info("[INFO] Rules kept: {}", rulesOut);
+        LOG.info("[INFO] Rules dropped: {}", (rulesIn - rulesOut));
       }
     } catch (FileNotFoundException e) {
-      System.err.printf("* FATAL: could not open %s\n", e.getMessage());
+      LOG.error("* FATAL: could not open {}\n", e.getMessage());
     } catch (IOException e) {
-      System.err.printf("* FATAL: could not write to %s\n", e.getMessage());
+      LOG.error("* FATAL: could not write to {}\n", e.getMessage());
     }
   }
 
@@ -310,11 +317,12 @@ public class TestSetFilter {
   public static void main(String[] argv) {
     // do some setup
     if (argv.length < 1) {
-      System.err.println("usage: TestSetFilter [-v|-p|-f|-n N] <test set1> [test set2 ...]");
-      System.err.println("    -v    verbose output");
-      System.err.println("    -p    parallel compatibility");
-      System.err.println("    -f    fast mode");
-      System.err.println("    -n    max n-gram to compare to (default 12)");
+      String usage = ("usage: TestSetFilter [-v|-p|-f|-n N] <test set1> [test set2 ...]\n"
+          + "    -v    verbose output\n"
+          + "    -p    parallel compatibility\n"
+          + "    -f    fast mode\n"
+          + "    -n    max n-gram to compare to (default 12)\n");
+      LOG.error(usage);
       return;
     }
 
@@ -343,38 +351,35 @@ public class TestSetFilter {
     int rulesIn = 0;
     int rulesOut = 0;
     if (filter.verbose) {
-      System.err.println("Processing rules...");
-      if (filter.fast) System.err.println("Using fast version...");
-      System.err.println("Using at max " + filter.RULE_LENGTH + " n-grams...");
+      LOG.info("Processing rules...");
+      if (filter.fast) LOG.info("Using fast version...");
+      LOG.info("Using at max {} n-grams...", filter.RULE_LENGTH);
     }
     while (scanner.hasNextLine()) {
       if (filter.verbose) {
         if ((rulesIn + 1) % 2000 == 0) {
-          System.err.print(".");
-          System.err.flush();
+          LOG.info(".");
         }
         if ((rulesIn + 1) % 100000 == 0) {
-          System.err.println(" [" + (rulesIn + 1) + "]");
-          System.err.flush();
+          LOG.info(" [{}]", (rulesIn + 1));
         }
       }
       rulesIn++;
       String rule = scanner.nextLine();
 
       if (filter.inTestSet(rule)) {
-        System.out.println(rule);
-        if (filter.parallel) System.out.flush();
+        LOG.info(rule);
+        if (filter.parallel);
         rulesOut++;
       } else if (filter.parallel) {
-        System.out.println("");
-        System.out.flush();
+        LOG.info("");
       }
     }
     if (filter.verbose) {
-      System.err.println("[INFO] Total rules read: " + rulesIn);
-      System.err.println("[INFO] Rules kept: " + rulesOut);
-      System.err.println("[INFO] Rules dropped: " + (rulesIn - rulesOut));
-      System.err.println("[INFO] cached queries: " + filter.cached);
+      LOG.info("[INFO] Total rules read: {}", rulesIn);
+      LOG.info("[INFO] Rules kept: {}", rulesOut);
+      LOG.info("[INFO] Rules dropped: {}", (rulesIn - rulesOut));
+      LOG.info("[INFO] cached queries: {}", filter.cached);
     }
 
     return;

@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.jerboa.util.FileManager;
 import edu.jhu.thrax.util.FormatUtils;
@@ -13,7 +15,7 @@ import edu.jhu.thrax.util.io.LineReader;
 
 public class ParaphraseOverlap {
 
-  private static final Logger logger = Logger.getLogger(ParaphraseOverlap.class.getName());
+  private static final Logger LOG = LoggerFactory.getLogger(ParaphraseOverlap.class);
 
   public static void main(String[] args) {
 
@@ -35,19 +37,19 @@ public class ParaphraseOverlap {
     }
 
     if (grammar_file == null) {
-      logger.severe("No grammar specified.");
+      LOG.error("No grammar specified.");
       return;
     }
     if (reference_file == null) {
-      logger.severe("No reference file specified.");
+      LOG.error("No reference file specified.");
       return;
     }
     if (weight_file == null) {
-      logger.severe("No weight file specified.");
+      LOG.error("No weight file specified.");
       return;
     }
     if (output_file == null) {
-      logger.severe("No output file specified.");
+      LOG.error("No output file specified.");
       return;
     }
 
@@ -75,7 +77,7 @@ public class ParaphraseOverlap {
       ArrayList<Double> missed = new ArrayList<Double>();
 
       LineReader reader = new LineReader(grammar_file);
-      System.err.print("[");
+      LOG.error("[");
       int rule_count = 0;
       while (reader.hasNext()) {
         String rule_line = reader.next().trim();
@@ -92,7 +94,7 @@ public class ParaphraseOverlap {
         }
 
         if (rule_to_score.containsKey(rule)) {
-          if (++rule_count % 10000 == 0) System.err.print("-");
+          if (++rule_count % 10000 == 0) LOG.error("-");
 
           if (rule_to_score.get(rule) == null)
             rule_to_score.put(rule, score);
@@ -102,7 +104,7 @@ public class ParaphraseOverlap {
           missed.add(score);
         }
       }
-      System.err.println("]");
+      LOG.error("]");
       reader.close();
 
       double[] matched = new double[rule_count];
@@ -120,10 +122,10 @@ public class ParaphraseOverlap {
       int num_correct = matched.length;
       int num_paraphrases = matched.length + unmatched.length;
 
-      System.err.println("References:  " + num_references);
-      System.err.println("Matched:     " + num_correct);
-      System.err.println("Unmatched:   " + (num_references - num_correct));
-      System.err.println("Nonmatching: " + unmatched.length);
+      LOG.info("References:  {}", num_references);
+      LOG.info("Matched:     {}", num_correct);
+      LOG.info("Unmatched:   {}", (num_references - num_correct));
+      LOG.info("Nonmatching: {}", unmatched.length);
 
       Arrays.sort(matched);
       Arrays.sort(unmatched);
@@ -144,7 +146,7 @@ public class ParaphraseOverlap {
       }
       score_writer.close();
     } catch (IOException e) {
-      logger.severe(e.getMessage());
+      LOG.error(e.getMessage());
     }
   }
 }

@@ -1,5 +1,6 @@
 package edu.jhu.thrax.hadoop.tools;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
@@ -13,25 +14,29 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.thrax.hadoop.datatypes.RuleWritable;
 import edu.jhu.thrax.hadoop.features.mapred.MapReduceFeature;
 import edu.jhu.thrax.hadoop.features.mapred.MapReduceFeatureFactory;
 import edu.jhu.thrax.util.ConfFileParser;
 
-public class FeatureTool extends Configured implements Tool
-{
+public class FeatureTool extends Configured implements Tool {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FeatureTool.class);
+
     public int run(String [] argv) throws Exception
     {
         if (argv.length < 2) {
-            System.err.println("usage: FeatureTool <conf file> <feature>");
+            LOG.error("usage: FeatureTool <conf file> <feature>");
             return 1;
         }
         String confFile = argv[0];
         String featureName = argv[1];
         MapReduceFeature f = MapReduceFeatureFactory.get(featureName);
         if (!(f instanceof MapReduceFeature)) {
-            System.err.println("Not a MapReduceFeature: " + featureName);
+            LOG.error("Not a MapReduceFeature: {}", featureName);
             return 1;
         }
         Configuration conf = getConf();
@@ -41,14 +46,14 @@ public class FeatureTool extends Configured implements Tool
         }
         String workDir = conf.get("thrax.work-dir");
         if (workDir == null) {
-            System.err.println("set work-dir key in conf file " + confFile + "!");
+            LOG.error("set work-dir key in conf file {}!", confFile);
             return 1;
         }
         if (!workDir.endsWith(Path.SEPARATOR)) {
             workDir += Path.SEPARATOR;
             conf.set("thrax.work-dir", workDir);
         }
-        Job job = Job.getInstance(conf, String.format("thrax-%s", featureName));
+        Job job = Job.getInstance(conf, String.format(Locale.ROOT, "thrax-%s", featureName));
 
         job.setJarByClass(f.getClass());
         job.setMapperClass(f.mapperClass());

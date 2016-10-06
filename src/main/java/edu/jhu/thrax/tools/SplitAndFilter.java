@@ -4,7 +4,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.jerboa.util.FileManager;
 import edu.jhu.thrax.util.FormatUtils;
@@ -12,7 +14,7 @@ import edu.jhu.thrax.util.io.LineReader;
 
 public class SplitAndFilter {
 
-  private static final Logger logger = Logger.getLogger(SplitAndFilter.class.getName());
+  private static final Logger LOG = LoggerFactory.getLogger(SplitAndFilter.class);
 
   @SuppressWarnings("unchecked")
   public static void main(String[] args) {
@@ -32,15 +34,15 @@ public class SplitAndFilter {
     }
 
     if (grammar_file == null) {
-      logger.severe("No grammar specified.");
+      LOG.error("No grammar specified.");
       return;
     }
     if (filter_file == null) {
-      logger.severe("No filter file specified.");
+      LOG.error("No filter file specified.");
       return;
     }
     if (output_prefix == null) {
-      logger.severe("No output prefix specified.");
+      LOG.error("No output prefix specified.");
       return;
     }
 
@@ -57,7 +59,7 @@ public class SplitAndFilter {
       }
       filter_reader.close();
     } catch (IOException e) {
-      logger.severe(e.getMessage());
+      LOG.error(e.getMessage());
     }
 
     try {
@@ -164,8 +166,7 @@ public class SplitAndFilter {
           }
           syn_count++;
         } catch (Exception e) {
-          logger.warning(e.getMessage());
-          logger.warning(rule_line);
+          LOG.error("{} {}", rule_line, e.getMessage());
           continue;
         }
       }
@@ -174,11 +175,11 @@ public class SplitAndFilter {
       for (String word : stop_count.keySet())
         stats_writer.write(word + "\t" + stop_count.get(word) + "\n");
 
-      System.err.println("Total:  \t" + (lex_count + phr_count + syn_count + drop_count));
-      System.out.println("Dropped:\t" + drop_count);
-      System.out.println("Lexical:\t" + lex_count);
-      System.out.println("Phrasal:\t" + phr_count);
-      System.out.println("Syntactic:\t" + syn_count);
+      LOG.info("Total:  \t{}", (lex_count + phr_count + syn_count + drop_count));
+      LOG.info("Dropped:\t{}", drop_count);
+      LOG.info("Lexical:\t{}", lex_count);
+      LOG.info("Phrasal:\t{}", phr_count);
+      LOG.info("Syntactic:\t{}", syn_count);
 
       lex_writer.close();
       phr_writer.close();
@@ -189,7 +190,7 @@ public class SplitAndFilter {
       syn_self_writer.close();
       stats_writer.close();
     } catch (IOException e) {
-      logger.severe(e.getMessage());
+      LOG.error(e.getMessage());
     }
   }
 

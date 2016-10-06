@@ -6,12 +6,15 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.thrax.hadoop.datatypes.AlignedRuleWritable;
 import edu.jhu.thrax.hadoop.datatypes.Annotation;
 import edu.jhu.thrax.util.Vocabulary;
 
 public class ExtractionMapper extends Mapper<LongWritable, Text, AlignedRuleWritable, Annotation> {
+  private static final Logger LOG = LoggerFactory.getLogger(ExtractionMapper.class);
   private RuleWritableExtractor extractor;
 
   protected void setup(Context context) throws IOException, InterruptedException {
@@ -22,7 +25,7 @@ public class ExtractionMapper extends Mapper<LongWritable, Text, AlignedRuleWrit
     // TODO: static initializer call for what Annotation actually carries would go here.
     extractor = RuleWritableExtractorFactory.create(context);
     if (extractor == null) {
-      System.err.println("WARNING: could not create rule extractor as configured!");
+      LOG.error("WARNING: could not create rule extractor as configured!");
     }
   }
 

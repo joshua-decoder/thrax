@@ -1,5 +1,7 @@
 package edu.jhu.thrax.datatypes;
 
+import java.util.Locale;
+
 import edu.jhu.thrax.util.FormatUtils;
 
 /**
@@ -57,7 +59,7 @@ public class IntPair implements Comparable<IntPair> {
 
     public String toString()
     {
-        return String.format("(%d,%d)", fst, snd);
+        return String.format(Locale.ROOT, "(%d,%d)", fst, snd);
     }
 
     public boolean equals(Object o)

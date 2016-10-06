@@ -13,6 +13,8 @@ import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.thrax.hadoop.datatypes.RuleWritable;
 import edu.jhu.thrax.hadoop.features.mapred.MapReduceFeature;
@@ -22,12 +24,14 @@ import edu.jhu.thrax.util.BackwardsCompatibility;
 import edu.jhu.thrax.util.ConfFileParser;
 import edu.jhu.thrax.util.FormatUtils;
 
-public class OutputTool extends Configured implements Tool
-{
+public class OutputTool extends Configured implements Tool {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OutputTool.class);
+
     public int run(String [] argv) throws Exception
     {
         if (argv.length < 1) {
-            System.err.println("usage: OutputTool <conf file>");
+            LOG.error("usage: OutputTool <conf file>");
             return 1;
         }
         String confFile = argv[0];
@@ -38,7 +42,7 @@ public class OutputTool extends Configured implements Tool
         }
         String workDir = conf.get("thrax.work-dir");
         if (workDir == null) {
-            System.err.println("Set work-dir key in conf file " + confFile + "!");
+          LOG.error("Set work-dir key in conf file " + confFile + "!");
             return 1;
         }
         if (!workDir.endsWith(Path.SEPARATOR)) {

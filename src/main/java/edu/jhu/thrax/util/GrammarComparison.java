@@ -6,13 +6,19 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class GrammarComparison {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GrammarComparison.class);
 
     private static final String SEPARATOR = "|||";
     private static final String USAGE = "usage: GrammarComparison <grammar> <grammar> <prefix for output files>";
@@ -20,7 +26,7 @@ public class GrammarComparison {
     public static void main(String [] argv)
     {
         if (argv.length < 3) {
-            System.err.println(USAGE);
+            LOG.error(USAGE);
             return;
         }
 
@@ -51,13 +57,13 @@ public class GrammarComparison {
             printRules(intersection, outputBase + ".both");
         }
         catch (Exception e) {
-            e.printStackTrace();
+          LOG.error(e.getMessage());
         }
         return;
     }
 
-    private static void printRules(Set<String> rules, String filename) throws FileNotFoundException, SecurityException {
-        PrintStream ps = new PrintStream(new FileOutputStream(filename));
+    private static void printRules(Set<String> rules, String filename) throws FileNotFoundException, SecurityException, UnsupportedEncodingException {
+        PrintStream ps = new PrintStream(new FileOutputStream(filename), true, "UTF-8");
         for (String s : rules)
             ps.println(s);
         ps.close();

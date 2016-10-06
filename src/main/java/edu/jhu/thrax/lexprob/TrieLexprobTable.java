@@ -4,13 +4,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.hadoop.conf.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TrieLexprobTable extends SequenceFileLexprobTable {
   private int[] cars;
   private int[][] cdrs;
   private float[][] values;
+  private static final Logger LOG = LoggerFactory.getLogger(TrieLexprobTable.class);
   
   public TrieLexprobTable(Configuration conf, String fileGlob) throws IOException {
     super(conf, fileGlob);
@@ -51,7 +55,7 @@ public class TrieLexprobTable extends SequenceFileLexprobTable {
         cdrList.clear();
         valueList.clear();
         i++;
-        if (i % 1000 == 0) System.err.printf("[%d]\n", i);
+        if (i % 1000 == 0) LOG.error("[{}]\n", i);
         cars[i] = te.car;
         car = cars[i];
       }
@@ -66,13 +70,13 @@ public class TrieLexprobTable extends SequenceFileLexprobTable {
   private void checkIntegrity() {
     for (int i = 0; i < cars.length-1; i++) {
       if (cars[i] > cars[i+1]) {
-        final String msg = String.format("Failed loading TrieLexprobTable. Entries must be sorted ascendingly, but cars[%d]=%d > cars[%d]=%d",
+        final String msg = String.format(Locale.ROOT, "Failed loading TrieLexprobTable. Entries must be sorted ascendingly, but cars[%d]=%d > cars[%d]=%d",
             i, cars[i], i+1, cars[i+1]);
         throw new RuntimeException(msg);
       }
       for (int j = 0; j < cdrs[i].length-1; j++) {
         if (cdrs[i][j] > cdrs[i][j+1]) {
-          final String msg = String.format("Failed loading TrieLexprobTable. Entries must be sorted ascendingly, but cdrs[%d][%d]=%d > cdrs[%d][%d]=%d",
+          final String msg = String.format(Locale.ROOT, "Failed loading TrieLexprobTable. Entries must be sorted ascendingly, but cdrs[%d][%d]=%d > cdrs[%d][%d]=%d",
               i, j, cdrs[i][j], i+1, j+1, cdrs[i][j+1]);
           throw new RuntimeException(msg);
         }

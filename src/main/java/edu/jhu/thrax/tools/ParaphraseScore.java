@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.PriorityQueue;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.jerboa.util.FileManager;
 import edu.jhu.thrax.util.FormatUtils;
@@ -13,12 +15,11 @@ import edu.jhu.thrax.util.io.LineReader;
 
 public class ParaphraseScore {
 
-  private static final Logger logger = Logger.getLogger(ParaphraseScore.class.getName());
-
   private static int unknown_source;
   private static int total;
   private static int correct;
   private static int found;
+  private static final Logger LOG = LoggerFactory.getLogger(ParaphraseScore.class);
 
   public static void main(String[] args) {
 
@@ -43,19 +44,19 @@ public class ParaphraseScore {
     }
     
     if (grammar_file == null) {
-      logger.severe("No grammar specified.");
+      LOG.error("No grammar specified.");
       return;
     }
     if (reference_file == null) {
-      logger.severe("No reference file specified.");
+      LOG.error("No reference file specified.");
       return;
     }
     if (weight_file == null) {
-      logger.severe("No weight file specified.");
+      LOG.error("No weight file specified.");
       return;
     }
     if (output_file == null) {
-      logger.severe("No output file specified.");
+      LOG.error("No output file specified.");
       return;
     }
 
@@ -92,7 +93,7 @@ public class ParaphraseScore {
       if (relevant_file != null) rel_writer = FileManager.getWriter(relevant_file);
 
       LineReader reader = new LineReader(grammar_file);
-      System.err.print("[");
+      LOG.info("[");
       int count = 0;
       while (reader.hasNext()) {
         String rule_line = reader.next().trim();
@@ -139,7 +140,7 @@ public class ParaphraseScore {
             score += weights.get(parts[0]) * Double.parseDouble(parts[1]);
         }
 
-        if (++count % 10000 == 0) System.err.print("-");
+        if (++count % 10000 == 0) LOG.info("-");
 
         String pair = source + " ||| " + target;
 
@@ -150,7 +151,7 @@ public class ParaphraseScore {
           candidates.put(pair, Math.max(score, previous));
         }
       }
-      System.err.println("]");
+      LOG.info("]");
       reader.close();
       if (rel_writer != null) rel_writer.close();
 
@@ -171,10 +172,10 @@ public class ParaphraseScore {
         entries.add(new ScoredEntry(p, candidates.get(p)));
       }
 
-      System.err.println("Total: " + total);
-      System.err.println("Found: " + found);
-      System.err.println("Correct: " + correct);
-      System.err.println("Not matching: " + unknown_source);
+      LOG.info("Total: {}", total);
+      LOG.info("Found: {}", found);
+      LOG.info("Correct: {}", correct);
+      LOG.info("Not matching: {}", unknown_source);
 
       BufferedWriter score_writer = FileManager.getWriter(output_file);
       while (!entries.isEmpty()) {
@@ -190,7 +191,7 @@ public class ParaphraseScore {
 
       score_writer.close();
     } catch (IOException e) {
-      logger.severe(e.getMessage());
+      LOG.error(e.getMessage());
     }
   }
 }

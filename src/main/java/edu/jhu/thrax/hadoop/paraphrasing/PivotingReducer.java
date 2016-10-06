@@ -12,6 +12,8 @@ import java.util.Set;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.thrax.hadoop.datatypes.Annotation;
 import edu.jhu.thrax.hadoop.datatypes.FeatureMap;
@@ -26,6 +28,8 @@ import edu.jhu.thrax.util.BackwardsCompatibility;
 import edu.jhu.thrax.util.Vocabulary;
 
 public class PivotingReducer extends Reducer<RuleWritable, FeatureMap, RuleWritable, FeatureMap> {
+
+  private static final Logger LOG = LoggerFactory.getLogger(PivotingReducer.class);
 
   private static enum PivotingCounters {
     F_READ, EF_READ, EF_PRUNED, EE_PRUNED, EE_WRITTEN
@@ -146,7 +150,7 @@ public class PivotingReducer extends Reducer<RuleWritable, FeatureMap, RuleWrita
       StringBuilder tgt_f = new StringBuilder();
       for (int w : tgt.features.keySet())
         tgt_f.append(Vocabulary.word(w) + "=" + tgt.features.get(w) + " ");
-      e.printStackTrace();
+      LOG.error(e.getMessage());
       throw new RuntimeException(Vocabulary.getWords(src.rhs) + " \n "
           + Vocabulary.getWords(tgt.rhs) + " \n " + src_f.toString() + " \n " + tgt_f.toString()
           + " \n");

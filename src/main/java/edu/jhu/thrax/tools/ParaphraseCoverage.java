@@ -8,7 +8,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.jerboa.util.FileManager;
 import edu.jhu.thrax.util.FormatUtils;
@@ -16,7 +18,7 @@ import edu.jhu.thrax.util.io.LineReader;
 
 public class ParaphraseCoverage {
 
-  private static final Logger logger = Logger.getLogger(ParaphraseCoverage.class.getName());
+  private static final Logger LOG = LoggerFactory.getLogger(ParaphraseCoverage.class);
 
   public static void main(String[] args) {
 
@@ -52,23 +54,23 @@ public class ParaphraseCoverage {
     }
 
     if (grammar_file == null) {
-      logger.severe("No grammar specified.");
+      LOG.error("No grammar specified.");
       return;
     }
     if (reference_file == null) {
-      logger.severe("No reference file specified.");
+      LOG.error("No reference file specified.");
       return;
     }
     if (weight_file == null) {
-      logger.severe("No weight file specified.");
+      LOG.error("No weight file specified.");
       return;
     }
     if (output_file == null) {
-      logger.severe("No output file specified.");
+      LOG.error("No output file specified.");
       return;
     }
     if (judgment_prefix != null && sampling_points == null) {
-      logger.severe("Need sampling points if judgment dump is requested.");
+      LOG.error("Need sampling points if judgment dump is requested.");
       return;
     }
 
@@ -140,7 +142,7 @@ public class ParaphraseCoverage {
       if (relevant_file != null) rel_writer = FileManager.getWriter(relevant_file);
 
       LineReader reader = new LineReader(grammar_file);
-      System.err.print("[");
+      LOG.error("[");
       int rule_count = 0;
       while (reader.hasNext()) {
         String rule_line = reader.next().trim();
@@ -159,11 +161,11 @@ public class ParaphraseCoverage {
             score += weights.get(parts[0]) * Double.parseDouble(parts[1]);
         }
 
-        if (++rule_count % 10000 == 0) System.err.print("-");
+        if (++rule_count % 10000 == 0) LOG.error("-");
 
         paraphrases.add(new ScoredParaphrase(candidate_phrase, fields[2], score));
       }
-      System.err.println("]");
+      LOG.error("]");
       reader.close();
       if (rel_writer != null) rel_writer.close();
 
@@ -188,9 +190,9 @@ public class ParaphraseCoverage {
         }
       }
 
-      System.err.println("Items:       " + num_items);
-      System.err.println("Covered:     " + num_covered);
-      System.err.println("Paraphrases: " + num_paraphrases);
+      LOG.info("Items:       {}", num_items);
+      LOG.info("Covered:     {}", num_covered);
+      LOG.info("Paraphrases: {}", num_paraphrases);
 
       boolean judge = (judgment_prefix != null);
       BufferedWriter cand_writer = null;
@@ -229,7 +231,7 @@ public class ParaphraseCoverage {
         // Sample paraphrases for judgements.
         if (judge && bin_id < bins.length && last_score < bins[bin_id] && sp.score >= bins[bin_id]) {
           bin_id++;
-          logger.info("Sampling bin " + bin_id + " at " + bins[bin_id - 1]);
+          LOG.info("Sampling bin {} at {}", bin_id, bins[bin_id - 1]);
 
           Object[] pps = paraphrases.toArray();
           for (int i = 0; i < 200; i++) {
@@ -250,7 +252,7 @@ public class ParaphraseCoverage {
       if (judge) cand_writer.close();
       score_writer.close();
     } catch (IOException e) {
-      logger.severe(e.getMessage());
+      LOG.error(e.getMessage());
     }
   }
 }

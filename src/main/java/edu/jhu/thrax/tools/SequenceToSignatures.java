@@ -4,19 +4,21 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.logging.Logger;
+import java.util.Locale;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.SequenceFile.Reader.Option;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.jerboa.util.FileManager;
 import edu.jhu.thrax.hadoop.distributional.SignatureWritable;
 
 public class SequenceToSignatures {
-
-  private static final Logger logger = Logger.getLogger(SequenceToSignatures.class.getName());
+  
+  private static final Logger LOG = LoggerFactory.getLogger(SequenceToSignatures.class);
 
   private static void writeConfig(String config_file, int num_bits) throws IOException {
     ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(config_file));
@@ -28,11 +30,11 @@ public class SequenceToSignatures {
   }
 
   private static void usage() {
-    System.err.println("Usage: java edu.jhu.thrax.tools.SequenceToSignature");
-    System.err.println("\t -i sequence_file \t Sequence file from Thrax signature extraction.");
-    System.err.println("\t -o prefix \t\t Prefix for signature files: <prefix>.0001.keyz.gz.");
-    System.err.println("\t -c chunk_size \t\t Number of keys per signature chunk.");
-    System.err.println();
+    String usage = "Usage: java edu.jhu.thrax.tools.SequenceToSignature"
+        + "\t -i sequence_file \t Sequence file from Thrax signature extraction."
+        + "\t -o prefix \t\t Prefix for signature files: <prefix>.0001.keyz.gz."
+        + "\t -c chunk_size \t\t Number of keys per signature chunk.";
+    LOG.error(usage);
   }
 
   public static void main(String[] args) throws Exception {
@@ -41,7 +43,7 @@ public class SequenceToSignatures {
     int chunk_size = 500000;
     String output_prefix = null;
 
-    if (args.length < 4 || args[0].toLowerCase().equals("-h")) {
+    if (args.length < 4 || args[0].toLowerCase(Locale.ROOT).equals("-h")) {
       usage();
       System.exit(0);
     }
@@ -55,17 +57,17 @@ public class SequenceToSignatures {
       }
     }
     if (input_file == null) {
-      logger.severe("No input file specified.");
+      LOG.error("No input file specified.");
       usage();
       System.exit(0);
     }
     if (output_prefix == null) {
-      logger.severe("No output prefix specified.");
+      LOG.error("No output prefix specified.");
       usage();
       System.exit(0);
     }
 
-    logger.info("Looking for " + input_file + " on " + (local ? "local filesystem" : "HDFS") + ".");
+    LOG.error("Looking for {} on {} .", input_file, (local ? "local filesystem" : "HDFS"));
 
     Configuration config = new Configuration();
     SignatureWritable signature = new SignatureWritable();
@@ -98,7 +100,7 @@ public class SequenceToSignatures {
           bytes_out.close();
           strengths_writer.close();
         }
-        String chunk_tag = String.format("-%05d", chunk_id);
+        String chunk_tag = String.format(Locale.ROOT, "-%05d", chunk_id);
         writeConfig(output_prefix + chunk_tag + ".config", signature.bytes.length * 8);
         bytes_out = new FileOutputStream(output_prefix + chunk_tag + ".bytes");
         strengths_writer = FileManager.getWriter(output_prefix + chunk_tag + ".strengths.gz");

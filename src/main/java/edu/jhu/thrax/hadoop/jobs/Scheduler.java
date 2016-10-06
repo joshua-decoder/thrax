@@ -5,10 +5,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.thrax.util.FormatUtils;
 
 public class Scheduler {
+  private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
   private HashSet<String> faked;
   private HashMap<Class<? extends ThraxJob>, JobState> jobs;
 
@@ -30,14 +33,13 @@ public class Scheduler {
     try {
       job = jobClass.newInstance();
     } catch (Exception e) {
-      e.printStackTrace();
       throw new SchedulerException(e.getMessage());
     }
     for (Class<? extends ThraxJob> c : job.getPrerequisites()) {
       schedule(c);
     }
     jobs.put(jobClass, JobState.PLANNED);
-    System.err.println("[SCHED] planned job for " + jobClass);
+    LOG.error("[SCHED] planned job for {}", jobClass);
     return true;
   }
 
@@ -45,7 +47,7 @@ public class Scheduler {
       throws SchedulerException {
     if (jobs.containsKey(job_class)) {
       jobs.put(job_class, state);
-      System.err.println(String.format("[SCHED] %s in state %s", job_class, state));
+      LOG.error("[SCHED] {} in state {}", job_class, state);
       updateAllStates();
       return true;
     }

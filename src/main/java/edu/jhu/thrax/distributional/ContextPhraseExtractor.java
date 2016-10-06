@@ -3,6 +3,7 @@ package edu.jhu.thrax.distributional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -10,6 +11,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.thrax.syntax.LatticeArray;
 import edu.jhu.thrax.util.FormatUtils;
@@ -20,6 +23,7 @@ import edu.jhu.thrax.util.io.LineReader;
 
 @SuppressWarnings("unchecked")
 public class ContextPhraseExtractor {
+  private static final Logger LOG = LoggerFactory.getLogger(ContextPhraseExtractor.class);
 
   private final String G = "_";
 
@@ -142,12 +146,12 @@ public class ContextPhraseExtractor {
       if (inputs.length < 6) throw new NotEnoughFieldsException();
 
       parse = new LatticeArray(inputs[0].trim(), true);
-      lemma = FormatUtils.P_SPACE.split(inputs[1].trim().toLowerCase());
+      lemma = FormatUtils.P_SPACE.split(inputs[1].trim().toLowerCase(Locale.ROOT));
 
       size = lemma.length;
       if (size != parse.size()) throw new MalformedInputException();
 
-      String[] ner_entries = FormatUtils.P_SPACE.split(inputs[2].trim().toLowerCase());
+      String[] ner_entries = FormatUtils.P_SPACE.split(inputs[2].trim().toLowerCase(Locale.ROOT));
       ner = new String[ner_entries.length];
       if (ner.length != size)
         throw new MalformedInputException("NER: " + ner.length + " vs. Size: " + size);
@@ -196,7 +200,7 @@ public class ContextPhraseExtractor {
         }
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error(e.getMessage());
       throw new MalformedInputException();
     }
     return output;
@@ -320,7 +324,7 @@ public class ContextPhraseExtractor {
         TreeMap<Text, Integer> feature_map = new TreeMap<Text, Integer>();
         for (Writable fn : cp.getFeatures().keySet())
           feature_map.put((Text) fn, ((IntWritable) cp.getFeatures().get(fn)).get());
-        System.out.println(FormatUtils.contextPhraseToText(cp.getPhrase(), feature_map));
+        LOG.info("{} {}", FormatUtils.contextPhraseToText(cp.getPhrase(), feature_map));
       }
     }
   }

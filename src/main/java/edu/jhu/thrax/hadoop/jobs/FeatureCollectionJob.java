@@ -12,6 +12,8 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.thrax.hadoop.datatypes.FeatureMap;
 import edu.jhu.thrax.hadoop.datatypes.FeaturePair;
@@ -19,6 +21,8 @@ import edu.jhu.thrax.hadoop.datatypes.RuleWritable;
 import edu.jhu.thrax.hadoop.paraphrasing.FeatureCollectionReducer;
 
 public class FeatureCollectionJob implements ThraxJob {
+  
+  private static final Logger LOG = LoggerFactory.getLogger(FeatureCollectionJob.class);
 
   private static HashSet<Class<? extends ThraxJob>> prereqs =
       new HashSet<Class<? extends ThraxJob>>();
@@ -32,7 +36,7 @@ public class FeatureCollectionJob implements ThraxJob {
       prereq = c.newInstance();
       prereq_names.add(prereq.getOutputSuffix());
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error(e.getMessage());
     }
   }
 

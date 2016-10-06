@@ -9,9 +9,13 @@ import java.util.Collection;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.thrax.util.ExternalizableToUtf8;
 import edu.jhu.thrax.util.Vocabulary;
@@ -19,6 +23,8 @@ import edu.jhu.thrax.util.exceptions.MalformedParseException;
 import edu.jhu.thrax.util.io.LineReader;
 
 public class LatticeArray implements ParseLattice, Externalizable, ExternalizableToUtf8 {
+  
+  private static final Logger LOG = LoggerFactory.getLogger(LatticeArray.class);
 
   /**
    * A random number to get rid of the warning.
@@ -142,7 +148,7 @@ public class LatticeArray implements ParseLattice, Externalizable, Externalizabl
 
   public int getOneConstituent(int from, int to) {
     int spanLength = to - from;
-    Stack<Integer> stack = new Stack<Integer>();
+    Stack<Integer> stack = new Stack<>();
 
     for (int i = forwardIndex.get(from); i < forwardIndex.get(from + 1); i += 2) {
       int currentSpan = forwardLattice.get(i + 1);
@@ -443,7 +449,7 @@ public class LatticeArray implements ParseLattice, Externalizable, Externalizabl
         forwardLattice.add(forwardIndex.size());
         if (pos) pre_terminals.add(current_id);
       } else {
-        current_id = Vocabulary.id((lowercase ? token.toLowerCase() : token));
+        current_id = Vocabulary.id((lowercase ? token.toLowerCase(Locale.ROOT) : token));
         terminals.add(current_id);
 
         forwardIndex.add(forwardLattice.size());
@@ -461,7 +467,6 @@ public class LatticeArray implements ParseLattice, Externalizable, Externalizabl
     try {
       la.readExternalUtf8(args[0]);
 
-      // System.err.println(la);
       int from = Integer.parseInt(args[1]);
       int to = Integer.parseInt(args[2]);
 
@@ -469,18 +474,18 @@ public class LatticeArray implements ParseLattice, Externalizable, Externalizabl
         Collection<Integer> labels;
         labels = la.getConstituentLabels(from, to);
         for (int l : labels)
-          System.err.println(Vocabulary.word(l));
+          LOG.info(Vocabulary.word(l));
 
         labels = la.getConcatenatedLabels(from, to);
         for (int l : labels)
-          System.err.println(Vocabulary.word(l));
+          LOG.info(Vocabulary.word(l));
 
         labels = la.getCcgLabels(from, to);
         for (int l : labels)
-          System.err.println(Vocabulary.word(l));
+          LOG.info(Vocabulary.word(l));
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error(e.getMessage());
     }
   }
 

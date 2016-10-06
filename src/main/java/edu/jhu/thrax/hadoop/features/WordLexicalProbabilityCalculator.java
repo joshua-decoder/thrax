@@ -3,7 +3,6 @@ package edu.jhu.thrax.hadoop.features;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.io.FloatWritable;
@@ -13,6 +12,8 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Partitioner;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.thrax.datatypes.AlignedSentencePair;
 import edu.jhu.thrax.datatypes.Alignment;
@@ -24,6 +25,7 @@ import edu.jhu.thrax.util.io.InputUtilities;
 public class WordLexicalProbabilityCalculator extends Configured {
   public static final long UNALIGNED = 0x0000000000000000L;
   public static final long MARGINAL = 0x0000000000000000L;
+  private static final Logger LOG = LoggerFactory.getLogger(WordLexicalProbabilityCalculator.class);
 
   public static class Map extends Mapper<LongWritable, Text, LongWritable, IntWritable> {
     private HashMap<Long, Integer> counts = new HashMap<Long, Integer>();
@@ -130,7 +132,8 @@ public class WordLexicalProbabilityCalculator extends Configured {
       final int num_elements_per_partition = (int) Math.ceil(max_trg_plus_one / (1.0 * numPartitions));
       int trg = ((int) (key.get() >> 32) & Integer.MAX_VALUE);
       if (trg < 0 || trg >= max_trg_plus_one) {
-        throw new RuntimeException(String.format("Word id %d out of range %d %d", trg, 0, max_trg_plus_one-1));
+        LOG.error("Word id {} out of range {} {}", trg, 0, max_trg_plus_one-1);
+        throw new RuntimeException();
       }
       return trg / num_elements_per_partition;
     }

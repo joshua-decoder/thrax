@@ -3,6 +3,7 @@ package edu.jhu.thrax.datatypes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Locale;
 
 import edu.jhu.thrax.extraction.SpanLabeler;
 import edu.jhu.thrax.util.Vocabulary;
@@ -67,9 +68,9 @@ public class HierarchicalRule {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("HierarchicalRule { ");
-    sb.append(String.format("lhs:%s ", lhs));
+    sb.append(String.format(Locale.ROOT, "lhs:%s ", lhs));
     for (int i = 0; i < nts.length; i++)
-      sb.append(String.format("%d:%s ", i, nts[i]));
+      sb.append(String.format(Locale.ROOT, "%d:%s ", i, nts[i]));
     sb.append("}");
     return sb.toString();
   }

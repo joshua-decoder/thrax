@@ -1,6 +1,7 @@
 package edu.jhu.thrax.util;
 
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -22,11 +23,11 @@ public class ConfFileParser {
         try {
                 URI configURI = new URI(confName);
                 String scheme = configURI.getScheme();
-		if (scheme != null && (scheme.equalsIgnoreCase("s3n") || scheme.equalsIgnoreCase("s3"))) {
-                    scanner = new Scanner(AmazonConfigFileLoader.getConfigStream(configURI));
+                if (scheme != null && (scheme.equalsIgnoreCase("s3n") || scheme.equalsIgnoreCase("s3"))) {
+                    scanner = new Scanner(AmazonConfigFileLoader.getConfigStream(configURI), "UTF-8");
                 }
                 else {
-                    scanner = new Scanner(DefaultConfigFileLoader.getConfigStream(configURI));
+                    scanner = new Scanner(DefaultConfigFileLoader.getConfigStream(configURI), "UTF-8");
                 }
         } catch (Exception e) {
         	throw new IllegalArgumentException(e.toString());

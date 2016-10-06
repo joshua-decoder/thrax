@@ -13,17 +13,21 @@ import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.reduce.IntSumReducer;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.thrax.hadoop.datatypes.RuleWritable;
 import edu.jhu.thrax.hadoop.extraction.ExtractionMapper;
 import edu.jhu.thrax.util.ConfFileParser;
 
-public class ExtractionTool extends Configured implements Tool
-{
+public class ExtractionTool extends Configured implements Tool {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ExtractionTool.class);
+
     public int run(String [] argv) throws Exception
     {
         if (argv.length < 1) {
-            System.err.println("USAGE: ExtractionTool <conf file>");
+            LOG.error("USAGE: ExtractionTool <conf file>");
             return 1;
         }
         String thraxConf = argv[0];
@@ -35,12 +39,12 @@ public class ExtractionTool extends Configured implements Tool
         }
         String inputPath = conf.get("thrax.input-file");
         if (inputPath == null) {
-            System.err.println("Set input-file key in conf file " + thraxConf + "!");
+            LOG.error("Set input-file key in conf file " + thraxConf + "!");
             return 1;
         }
         String workDir = conf.get("thrax.work-dir");
         if (workDir == null) {
-            System.err.println("Set work-dir key in conf file " + thraxConf + "!");
+            LOG.error("Set work-dir key in conf file " + thraxConf + "!");
             return 1;
         }
 

@@ -14,18 +14,22 @@ import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.reduce.IntSumReducer;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.thrax.hadoop.datatypes.TextPair;
 import edu.jhu.thrax.hadoop.features.WordLexicalProbabilityCalculator;
 import edu.jhu.thrax.hadoop.jobs.WordLexprobJob;
 import edu.jhu.thrax.util.ConfFileParser;
 
-public class TargetWordGivenSourceWordProbabilityTool extends Configured implements Tool
-{
+public class TargetWordGivenSourceWordProbabilityTool extends Configured implements Tool {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TargetWordGivenSourceWordProbabilityTool.class);
+
     public int run(String [] argv) throws Exception
     {
         if (argv.length < 1) {
-            System.err.println("usage: TargetWordGivenSourceWordProbabilityTool <conf file>");
+            LOG.error("usage: TargetWordGivenSourceWordProbabilityTool <conf file>");
             return 1;
         }
         String confFile = argv[0];
@@ -36,19 +40,19 @@ public class TargetWordGivenSourceWordProbabilityTool extends Configured impleme
         }
         String input = conf.get("thrax.input-file");
         if (input == null) {
-            System.err.println("set input-file key in conf file " + confFile + "!");
+            LOG.error("set input-file key in conf file {}!", confFile);
             return 1;
         }
         String workDir = conf.get("thrax.work-dir");
         if (workDir == null) {
-            System.err.println("set work-dir key in conf file " + confFile + "!");
+            LOG.error("set work-dir key in conf file {}!", confFile);
             return 1;
         }
         if (!workDir.endsWith(Path.SEPARATOR)) {
             workDir += Path.SEPARATOR;
             conf.set("thrax.work-dir", workDir);
         }
-		conf.setBoolean(WordLexprobJob.SOURCE_GIVEN_TARGET, false);
+        conf.setBoolean(WordLexprobJob.SOURCE_GIVEN_TARGET, false);
         Job job = Job.getInstance(conf, "thrax-tgs-word-lexprob");
 
         job.setJarByClass(WordLexicalProbabilityCalculator.class);

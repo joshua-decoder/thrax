@@ -3,12 +3,16 @@ package edu.jhu.thrax.distributional;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.jhu.thrax.distributional.FeatureTypes.Label;
 import edu.jhu.thrax.distributional.FeatureTypes.Type;
 import edu.jhu.thrax.util.FormatUtils;
 
-
 public class FeatureSet {
+  
+  private static final Logger LOG = LoggerFactory.getLogger(FeatureSet.class);
 
   private Set<FeatureClass> features;
 
@@ -22,7 +26,7 @@ public class FeatureSet {
   public void addFeatureClass(String entry) {
     String[] fields = FormatUtils.P_DASH.split(entry);
     for (String f : fields) {
-      System.err.println(f);
+      LOG.info(f);
     }
   }
 

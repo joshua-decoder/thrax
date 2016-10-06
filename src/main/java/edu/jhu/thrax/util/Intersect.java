@@ -38,8 +38,8 @@ public class Intersect
             scanner = new Scanner(new GZIPInputStream(new FileInputStream(new File(file2))), "UTF-8");
         else
             scanner = new Scanner(new File(file2), "UTF-8");
-        PrintStream firstGrammar = new PrintStream(new FileOutputStream(outputPrefix + ".1"));
-        PrintStream secondGrammar = new PrintStream(new FileOutputStream(outputPrefix + ".2"));
+        PrintStream firstGrammar = new PrintStream(new FileOutputStream(outputPrefix + ".1"), true, "UTF-8");
+        PrintStream secondGrammar = new PrintStream(new FileOutputStream(outputPrefix + ".2"), true, "UTF-8");
         while (scanner.hasNextLine()) {
             String s = scanner.nextLine();
             String r = repr(s);

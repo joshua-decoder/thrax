@@ -4,3 +4,7 @@ doc/
 AwsCredentials.properties
 
 .DS_Store
+.project
+.classpath
+.settings/
+target

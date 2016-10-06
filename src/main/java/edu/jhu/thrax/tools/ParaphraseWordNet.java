@@ -5,15 +5,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.PriorityQueue;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.jerboa.util.FileManager;
 import edu.jhu.thrax.util.FormatUtils;
 import edu.jhu.thrax.util.io.LineReader;
 
 public class ParaphraseWordNet {
-
-  private static final Logger logger = Logger.getLogger(ParaphraseWordNet.class.getName());
+  
+  private static final Logger LOG = LoggerFactory.getLogger(ParaphraseWordNet.class);
 
   public static void main(String[] args) {
 
@@ -38,19 +40,19 @@ public class ParaphraseWordNet {
     }
 
     if (grammar_file == null) {
-      logger.severe("No grammar specified.");
+      LOG.error("No grammar specified.");
       return;
     }
     if (reference_file == null) {
-      logger.severe("No reference file specified.");
+      LOG.error("No reference file specified.");
       return;
     }
     if (weight_file == null) {
-      logger.severe("No weight file specified.");
+      LOG.error("No weight file specified.");
       return;
     }
     if (output_file == null) {
-      logger.severe("No output file specified.");
+      LOG.error("No output file specified.");
       return;
     }
 
@@ -82,7 +84,7 @@ public class ParaphraseWordNet {
       if (relevant_file != null) rel_writer = FileManager.getWriter(relevant_file);
 
       LineReader reader = new LineReader(grammar_file);
-      System.err.print("[");
+      LOG.info("[");
       int count = 0;
       while (reader.hasNext()) {
         String rule_line = reader.next().trim();
@@ -114,7 +116,7 @@ public class ParaphraseWordNet {
             score += weights.get(parts[0]) * Double.parseDouble(parts[1]);
         }
 
-        if (++count % 10000 == 0) System.err.print("-");
+        if (++count % 10000 == 0) LOG.info("-");
 
         String candidate = lhs + " ||| " + source + " ||| " + target;
 
@@ -125,7 +127,7 @@ public class ParaphraseWordNet {
           candidates.put(candidate, Math.max(score, previous));
         }
       }
-      System.err.println("]");
+      LOG.info("]");
       reader.close();
       if (rel_writer != null) rel_writer.close();
 
@@ -140,9 +142,9 @@ public class ParaphraseWordNet {
         entries.add(new ScoredEntry(p, candidates.get(p)));
       }
 
-      System.err.println("References : " + num_references);
-      System.err.println("Paraphrases: " + num_paraphrases);
-      System.err.println("Correct:     " + num_correct);
+      LOG.info("References : {}", num_references);
+      LOG.info("Paraphrases: {}", num_paraphrases);
+      LOG.info("Correct:     {}", num_correct);
 
       BufferedWriter score_writer = FileManager.getWriter(output_file);
       while (!entries.isEmpty()) {
@@ -156,7 +158,7 @@ public class ParaphraseWordNet {
       }
       score_writer.close();
     } catch (IOException e) {
-      logger.severe(e.getMessage());
+      LOG.error(e.getMessage());
     }
   }
 }

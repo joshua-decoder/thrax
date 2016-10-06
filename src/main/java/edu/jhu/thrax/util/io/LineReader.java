@@ -25,14 +25,18 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.zip.GZIPInputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class provides an Iterator interface to a BufferedReader. This covers the most common
  * use-cases for reading from files without ugly code to check whether we got a line or not.
  * 
  * @author wren ng thornton <wren@users.sourceforge.net>
- * @version $LastChangedDate: 2009-03-26 15:06:57 -0400 (Thu, 26 Mar 2009) $
  */
 public class LineReader implements Reader<String> {
+
+  private static final Logger LOG = LoggerFactory.getLogger(LineReader.class);
 
   /*
    * Note: charset name is case-agnostic "UTF-8" is the canonical name "UTF8", "unicode-1-1-utf-8"
@@ -282,7 +286,7 @@ public class LineReader implements Reader<String> {
   /** Example usage code. */
   public static void main(String[] args) {
     if (1 != args.length) {
-      System.out.println("Usage: java LineReader filename");
+      LOG.error("Usage: java LineReader filename");
       System.exit(1);
     }
 
@@ -292,7 +296,7 @@ public class LineReader implements Reader<String> {
       try {
         for (String line : in) {
 
-          System.out.println(line);
+          LOG.info(line);
 
         }
       } finally {
@@ -300,7 +304,7 @@ public class LineReader implements Reader<String> {
       }
 
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error(e.getMessage());
     }
   }
 }

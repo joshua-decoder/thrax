@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Queue;
 import java.util.logging.Logger;
 
@@ -96,7 +97,7 @@ public class ExtractPropbankRules {
           if (rel.suffix(rel_spans.get(i))) rel.t = rel_spans.get(i).t;
 
         // Build predicate-only entries.
-        String rel_string = parse.getTerminalPhrase(rel.f, rel.t).toLowerCase();
+        String rel_string = parse.getTerminalPhrase(rel.f, rel.t).toLowerCase(Locale.ROOT);
 
         if (continuous) {
           for (String label : getLabels(parse, rel))
@@ -131,7 +132,7 @@ public class ExtractPropbankRules {
               i++;
             } else {
               for (StringBuilder b : surfaces)
-                b.append(parse.getTerminal(p).toLowerCase() + " ");
+                b.append(parse.getTerminal(p).toLowerCase(Locale.ROOT) + " ");
               p++;
             }
           }

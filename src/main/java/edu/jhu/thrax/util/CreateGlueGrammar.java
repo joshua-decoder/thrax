@@ -3,10 +3,16 @@ package edu.jhu.thrax.util;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Locale;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.thrax.util.io.LineReader;
 
 public class CreateGlueGrammar {
+  
+  private static final Logger LOG = LoggerFactory.getLogger(CreateGlueGrammar.class);
   private static HashSet<String> nts;
 
   // [GOAL] ||| [GOAL,1] [X,2] ||| [GOAL,1] [X,2] ||| -1
@@ -28,12 +34,12 @@ public class CreateGlueGrammar {
     if (argv.length > 1) GOAL = argv[1];
 
     if (grammar_file_name == null) {
-      System.err.println("No grammar specified.");
+      LOG.error("No grammar specified.");
       System.exit(1);
     }
     File grammar_file = new File(grammar_file_name);
     if (!grammar_file.exists()) {
-      System.err.println("Grammar file doesn't exist: " + grammar_file_name);
+      LOG.error("Grammar file doesn't exist: {}", grammar_file_name);
       System.exit(1);
     }
 
@@ -51,7 +57,7 @@ public class CreateGlueGrammar {
         int lhsStart = line.indexOf("[") + 1;
         int lhsEnd = line.indexOf("]");
         if (lhsStart < 1 || lhsEnd < 0) {
-          System.err.printf("malformed rule: %s\n", line);
+          LOG.error("malformed rule: {}\n", line);
           continue;
         }
         String lhs = line.substring(lhsStart, lhsEnd);
@@ -59,12 +65,12 @@ public class CreateGlueGrammar {
       }
     }
 
-    System.out.println(String.format(R_START, GOAL));
+    LOG.info(String.format(Locale.ROOT, R_START, GOAL));
     for (String nt : nts)
-      System.out.println(String.format(R_TWO, GOAL, nt));
-    System.out.println(String.format(R_END, GOAL));
+      LOG.info(String.format(Locale.ROOT, R_TWO, GOAL, nt));
+      LOG.info(String.format(Locale.ROOT, R_END, GOAL));
     for (String nt : nts)
-      System.out.println(String.format(R_TOP, GOAL, nt));
+      LOG.info(String.format(Locale.ROOT, R_TOP, GOAL, nt));
 
   }
 }

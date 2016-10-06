@@ -1,32 +1,34 @@
 package edu.jhu.thrax.tools;
 
 import java.io.BufferedWriter;
-import java.util.logging.Logger;
+import java.util.Locale;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.hadoop.io.SequenceFile.Reader.Option;
 
 import edu.jhu.jerboa.util.FileManager;
 
 public class SequenceToGrammar {
 
-  private static final Logger logger = Logger.getLogger(SequenceToGrammar.class.getName());
+  private static final Logger LOG = LoggerFactory.getLogger(SequenceToGrammar.class);
 
   private static void usage() {
-    System.err.println("Usage: java edu.jhu.thrax.tools.SequenceToGrammar");
-    System.err.println("\t -i sequence_file \t Sequence file from Thrax grammar extraction.");
-    System.err.println("\t -o output_file   \t Output grammar file name.");
-    System.err.println();
+    String usage = "Usage: java edu.jhu.thrax.tools.SequenceToGrammar"
+        + "\t -i sequence_file \t Sequence file from Thrax grammar extraction."
+        + "\t -o output_file   \t Output grammar file name.";
+    LOG.error(usage);
   }
 
   public static void main(String[] args) throws Exception {
     String input_file = null;
     String output_file = null;
 
-    if (args.length < 4 || args[0].toLowerCase().equals("-h")) {
+    if (args.length < 4 || args[0].toLowerCase(Locale.ROOT).equals("-h")) {
       usage();
       System.exit(0);
     }
@@ -38,12 +40,12 @@ public class SequenceToGrammar {
       }
     }
     if (input_file == null) {
-      logger.severe("No input file specified.");
+      LOG.error("No input file specified.");
       usage();
       System.exit(0);
     }
     if (output_file == null) {
-      logger.severe("No output file specified.");
+      LOG.error("No output file specified.");
       usage();
       System.exit(0);
     }
@@ -63,6 +65,6 @@ public class SequenceToGrammar {
     }
     reader.close();
     grammar_writer.close();
-    System.err.println("Merged " + rule_count + " rules.");
+    LOG.info("Merged {} rules.", rule_count);
   }
 }

@@ -67,12 +67,12 @@ public class ContextWritable implements Writable {
        this.mergeSums(that, slsh);
       } else {
         for (Writable feature_text : that.map.keySet()) {
-          int feature_value = ((IntWritable) that.map.get(feature_text)).get();
-          IntWritable current_value = (IntWritable) this.map.get(feature_text);
-          if (current_value != null)
-            this.map.put(feature_text, new IntWritable(current_value.get() + feature_value));
+          int featureValue = ((IntWritable) that.map.get(feature_text)).get();
+          IntWritable currentValue = (IntWritable) this.map.get(feature_text);
+          if (currentValue != null)
+            this.map.put(feature_text, new IntWritable(currentValue.get() + featureValue));
           else
-            this.map.put(feature_text, new IntWritable(feature_value));
+            this.map.put(feature_text, new IntWritable(featureValue));
         }
       }
     }
@@ -83,20 +83,20 @@ public class ContextWritable implements Writable {
     if (!that.compacted.get()) {
       throw new RuntimeException("Trying to merge sums on un-compacted ContextWritable.");
     }
-    Signature this_signature = new Signature();
-    Signature that_signature = new Signature();
+    Signature thisSignature = new Signature();
+    Signature thatSignature = new Signature();
     // TODO: probably needs deep copy.
-    this_signature.sums = sums;
-    that_signature.sums = sums;
-    slsh.update(this_signature.toString(), that_signature);
+    thisSignature.sums = sums;
+    thatSignature.sums = sums;
+    slsh.update(thisSignature.toString(), thatSignature.toString(), 1.0);
   }
 
   public void compact(SLSH slsh) {
     Signature signature = new Signature();
-    slsh.initializeSignature(signature);
+    slsh.signatures.put(signature.toString(), signature);
     for (Writable feature_name : map.keySet()) {
-      slsh.updateSignature(signature, ((Text) feature_name).toString(),
-          ((IntWritable) map.get(feature_name)).get(), 1);
+      slsh.update(signature.toString(), ((Text) feature_name).toString(),
+          ((IntWritable) map.get(feature_name)).get());
     }
     compacted.set(true);
     map = null;

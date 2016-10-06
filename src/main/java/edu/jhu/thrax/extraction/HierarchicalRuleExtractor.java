@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.jhu.thrax.datatypes.Alignment;
 import edu.jhu.thrax.datatypes.ArrayAlignment;
 import edu.jhu.thrax.datatypes.HierarchicalRule;
@@ -28,6 +31,7 @@ public class HierarchicalRuleExtractor {
   private boolean allowMixed = true;
   private boolean allowFullSentenceRules = true;
   private PhrasePair fullSentencePhrasePair;
+  private static final Logger LOG = LoggerFactory.getLogger(HierarchicalRuleExtractor.class);
 
   public HierarchicalRuleExtractor() {
     // just use the defaults!
@@ -182,9 +186,9 @@ public class HierarchicalRuleExtractor {
         Alignment alignment = ArrayAlignment.fromString(parts[2], false);
         for (HierarchicalRule r : extractor.extract(source.length, target.length, alignment)) {
           if (labeler != null)
-            System.out.println(r.toString(source, target, labeler, true));
+            LOG.info(r.toString(source, target, labeler, true));
           else
-            System.out.println(r);
+            LOG.info(r.toString());
         }
       }
     }

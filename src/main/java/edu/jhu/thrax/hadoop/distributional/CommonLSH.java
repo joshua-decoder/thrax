@@ -1,19 +1,21 @@
 package edu.jhu.thrax.hadoop.distributional;
 
 import org.apache.hadoop.conf.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.jhu.jerboa.sim.SLSH;
 
 public class CommonLSH {
+  
+  private static final Logger LOG = LoggerFactory.getLogger(CommonLSH.class);
 
   public static SLSH getSLSH(Configuration conf) {
     SLSH slsh = null;
     try {
       slsh = new SLSH(true);
-      //slsh.initialize(conf.getInt("thrax.lsh-num-bits", 256),
-      //    conf.getInt("thrax.lsh-pool-size", 100000), conf.getInt("thrax.lsh-random-seed", 42));
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error(e.getMessage());
       System.exit(1);
     }
     return slsh;
