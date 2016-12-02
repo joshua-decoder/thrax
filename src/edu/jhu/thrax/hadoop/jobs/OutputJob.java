@@ -74,14 +74,6 @@ public class OutputJob implements ThraxJob {
     if (FileInputFormat.getInputPaths(job).length == 0) {
       // TODO: This is going to crash.
       FileInputFormat.addInputPath(job, new Path(workDir + "rules"));
-    } else {
-      // We have at least one feature to aggregate, so we don't need
-      // the rules sub-directory at all at this point.
-      // We delete it to save disk space.
-      final FileSystem fs = FileSystem.get(conf);
-      final Path rulesPath = new Path(workDir + "rules");
-      final boolean recursive = true;
-      fs.delete(rulesPath, recursive);
     }
 
     String outputPath = conf.get("thrax.outputPath", "");
